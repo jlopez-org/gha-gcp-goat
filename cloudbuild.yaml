@@ -1,4 +1,5 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  #args: ['build', '-t', 'gcr.io/jlopez-370123/github.com/juliandreslopez/gcp-cloudbuild-goat/ccs-demo-image', '.']
   args: ['build', '-t', 'us-east1-docker.pkg.dev/jlopez-370123/prismacloud-demo/ccs-demo-image', '.']
+- name: 'gcr.io/cloud-builders/docker'
+  args: ['push', 'us-east1-docker.pkg.dev/jlopez-370123/prismacloud-demo/ccs-demo-image']
