@@ -48,7 +48,7 @@ jobs:
       # Build the Docker image
     - name: Build
       run: |-
-        docker build --tag "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/prismacloud-demo/${{ secrets.IMAGE }}:${{ github.sha }}" .
+        docker build --tag "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" .
     - name: Prisma Cloud image scan
       id: scan
       uses: PaloAltoNetworks/prisma-cloud-scan@v1
@@ -56,15 +56,15 @@ jobs:
         pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
         pcc_user: ${{ secrets.PCC_USER }}
         pcc_pass: ${{ secrets.PCC_PASS }}
-        image_name: gcr.io/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
+        image_name: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
   # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
-        docker push "gcr.io/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" 
+        docker push "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" 
     - name: Update deploy image to GKE
       run: |-
         kustomize create --resources gke-deployment.yml
-        kustomize edit set image "demo-image-name=gcr.io/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}"
+        kustomize edit set image "demo-image-name=us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}"
         cat kustomization.yaml
         kustomize build . | kubectl apply -f -
         kubectl get pods -o wide
