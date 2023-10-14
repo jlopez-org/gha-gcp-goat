@@ -15,10 +15,12 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: auth
+    - name: GCPauth
       uses: 'google-github-actions/auth@v0'
       with:
+        token_format : access_token
         credentials_json: ${{ secrets.GKE_SA_KEY }}
+        access_token_lifetime: 300s
     - name: 'Set up Google Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v0'
       with:
@@ -51,7 +53,7 @@ jobs:
       with:
         registry: us-east1-docker.pkg.dev
         username: oauth2accesstoken
-        password: ${{ steps.auth.outputs.access_token }}
+        password: ${{ steps.GCPauth.outputs.access_token }}
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
