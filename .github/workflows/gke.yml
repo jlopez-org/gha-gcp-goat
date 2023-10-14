@@ -26,15 +26,7 @@ jobs:
         token_format : access_token
         credentials_json: ${{ secrets.GKE_SA_KEY }}
         access_token_lifetime: 300s
-
-    # GCP Artifactory Registry Login
-    - name: Login to Artifact Registry
-      uses: docker/login-action@v1
-      with:
-        registry: us-east1-docker.pkg.dev
-        username: oauth2accesstoken
-        password: ${{ steps.auth.outputs.access_token }}
-        
+       
     - name: 'Set up Google Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v0'
       with:
@@ -64,8 +56,14 @@ jobs:
         pcc_user: ${{ secrets.PCC_USER }}
         pcc_pass: ${{ secrets.PCC_PASS }}
         image_name: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
-        
 
+    # GCP Artifactory Registry Login
+    - name: Login to Artifact Registry
+      uses: docker/login-action@v1
+      with:
+        registry: us-east1-docker.pkg.dev
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
         
     # Push the Docker image to Google Container Registry
     - name: Publish
