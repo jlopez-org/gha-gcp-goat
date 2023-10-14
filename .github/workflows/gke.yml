@@ -5,22 +5,36 @@ on:
   pull_request:
     branches: [ main ]
 name: GKE - Build, Scan and Deploy
+
 jobs:
   deploy:
     name: GKE - Build, Scan and Deploy
     runs-on: ubuntu-latest
+    
     permissions:
       contents: 'read'
       id-token: 'write'
+    
     steps:
     - name: Checkout
       uses: actions/checkout@v3
-    - name: GCPauth
+      
+    - id: auth
+      name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v1'
       with:
-        token_format : 'access_token'
+        token_format : access_token
         credentials_json: ${{ secrets.GKE_SA_KEY }}
         access_token_lifetime: 300s
+
+    # GCP Artifactory Registry Login
+    - name: Login to Artifact Registry
+      uses: docker/login-action@v1
+      with:
+        registry: us-east1-docker.pkg.dev
+        username: oauth2accesstoken
+        password: ${{ steps.auth.outputs.access_token }}
+        
     - name: 'Set up Google Cloud SDK'
       uses: 'google-github-actions/setup-gcloud@v0'
       with:
@@ -28,16 +42,19 @@ jobs:
     #- name: Get docker GCR credentials
       # run: |-
       #   gcloud --quiet auth configure-docker gcr.io
+    
     # Get the GKE credentials so we can deploy to the cluster
-    - name : Get GKE credentials 
+    - name : 'Get GKE credentials'
       uses: google-github-actions/get-gke-credentials@v0
       with:
         cluster_name: ${{ secrets.GKE_CLUSTER }}
         location: ${{ secrets.GKE_ZONE }}
+        
     # Build the Docker image
     - name: Build
       run: |-
         docker build --tag "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" .
+        
     # Code Security Scan
     - name: Prisma Cloud image scan
       id: scan
@@ -47,17 +64,14 @@ jobs:
         pcc_user: ${{ secrets.PCC_USER }}
         pcc_pass: ${{ secrets.PCC_PASS }}
         image_name: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
-    # GCP Artifactory Registry Login
-    - name: Login to Artifact Registry
-      uses: docker/login-action@v1
-      with:
-        registry: us-east1-docker.pkg.dev
-        username: oauth2accesstoken
-        password: ${{ steps.GCPauth.outputs.access_token }}
+        
+
+        
     # Push the Docker image to Google Container Registry
     - name: Publish
       run: |-
         docker push "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" 
+        
     # Container Deployment
     - name: Update deploy image to GKE
       run: |-
