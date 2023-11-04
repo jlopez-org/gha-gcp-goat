@@ -1,1 +1,1 @@
-# gcp-cloudbuild-goat
+# gha-cloudbuild-goat
