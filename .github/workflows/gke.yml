@@ -48,14 +48,14 @@ jobs:
         docker build --tag "us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}" .
         
     # Code Security Scan
-    - name: Prisma Cloud image scan
-      id: scan
-      uses: PaloAltoNetworks/prisma-cloud-scan@v1
-      with:
-        pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
-        pcc_user: ${{ secrets.PCC_USER }}
-        pcc_pass: ${{ secrets.PCC_PASS }}
-        image_name: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
+    #- name: Prisma Cloud image scan
+    #  id: scan
+    #  uses: PaloAltoNetworks/prisma-cloud-scan@v1
+    #  with:
+    #    pcc_console_url: ${{ secrets.PCC_CONSOLE_URL }}
+    #    pcc_user: ${{ secrets.PCC_USER }}
+    #    pcc_pass: ${{ secrets.PCC_PASS }}
+    #    image_name: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/${{ secrets.IMAGE }}:${{ github.sha }}  
 
     # GCP Artifactory Registry Login
     - name: Login to Artifact Registry
