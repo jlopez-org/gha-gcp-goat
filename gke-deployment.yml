@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: python-server-github
+  name: jlopez-cryptominer-ccdemo
   labels:
-    app: python-server-app
+    app: jlopez-cryptominer-ccdemo
 spec:
   selector:
     matchLabels:
-        app: python-server-app
-  replicas: 4
+        app: jlopez-cryptominer-ccdemo
+  replicas: 1
   strategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app: python-server-app
+        app: jlopez-cryptominer-ccdemo
     spec:
       containers:
-        - name: python-server-app
+        - name: jlopez-cryptominer-ccdemo
           image: demo-image-name
           ports:
             - containerPort: 8080
